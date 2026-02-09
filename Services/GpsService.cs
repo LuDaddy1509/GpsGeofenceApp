@@ -1,4 +1,5 @@
 ﻿using GpsGeofenceApp.Models;
+using System.Runtime.Versioning;
 
 public class GpsService : IGpsService
 {
@@ -73,11 +74,16 @@ public class GpsService : IGpsService
             await Task.Delay(GetDelay(), token);
         }
     }
-
     private async Task<Location?> GetLocationAsync(GeolocationAccuracy accuracy)
     {
+#if WINDOWS
+        // Suppress CA1416 by restricting usage to supported platforms
         var request = new GeolocationRequest(accuracy, TimeSpan.FromSeconds(10));
         return await Geolocation.GetLocationAsync(request);
+#else
+        // Optionally, handle or throw for unsupported platforms
+        throw new PlatformNotSupportedException("GeolocationRequest is only supported on Windows 10.0.17763.0 and later.");
+#endif
     }
 
     private GeolocationAccuracy DecideAccuracy()
@@ -108,6 +114,7 @@ public class GpsService : IGpsService
 
     private GpsLocation Convert(Location location)
     {
+#if WINDOWS
         return new GpsLocation
         {
             Latitude = location.Latitude,
@@ -115,6 +122,9 @@ public class GpsService : IGpsService
             Accuracy = location.Accuracy ?? 0,
             Timestamp = location.Timestamp.UtcDateTime
         };
+#else
+        throw new PlatformNotSupportedException("Location properties are only supported on Windows 10.0.17763.0 and later.");
+#endif
     }
 
     private double DistanceInMeters(double lat1, double lon1, double lat2, double lon2)
