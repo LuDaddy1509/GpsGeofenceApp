@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Văn Miếu",
+    "latitude": 21.028511,
+    "longitude": 105.804817,
+    "radius": 40,
+    "cooldownMinutes": 5,
+    "audioUrl": "van_mieu.mp3",
+    "description": "Trường đại học đầu tiên của Việt Nam"
+  }
+]

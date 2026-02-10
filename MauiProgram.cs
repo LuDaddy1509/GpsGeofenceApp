@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
+using GpsGeofenceApp.Data;
+using System.Runtime.Versioning;
 
 namespace GpsGeofenceApp
 {
@@ -9,6 +11,8 @@ namespace GpsGeofenceApp
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
+#if ANDROID || IOS || MACCATALYST || TIZEN || WINDOWS
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
@@ -26,12 +30,14 @@ namespace GpsGeofenceApp
                     fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
                     fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
                 });
+#endif
 
 #if DEBUG
     		builder.Logging.AddDebug();
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
 
+            // Existing registrations
             builder.Services.AddSingleton<ProjectRepository>();
             builder.Services.AddSingleton<TaskRepository>();
             builder.Services.AddSingleton<CategoryRepository>();
@@ -42,8 +48,15 @@ namespace GpsGeofenceApp
             builder.Services.AddSingleton<ProjectListPageModel>();
             builder.Services.AddSingleton<ManageMetaPageModel>();
 
+            // POI/database registrations
+            builder.Services.AddSingleton<AppDatabase>();
+            builder.Services.AddSingleton<PoiLocalDataSource>();
+            builder.Services.AddSingleton<IPoiRepository, PoiRepository>();
+
+#if WINDOWS
             builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
+#endif
 
             return builder.Build();
         }

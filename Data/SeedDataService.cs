@@ -1,6 +1,10 @@
+using System;
+using System.IO;
 using System.Text.Json;
-using GpsGeofenceApp.Models;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Storage;
+using GpsGeofenceApp.Models;
 
 namespace GpsGeofenceApp.Data
 {
@@ -31,10 +35,10 @@ namespace GpsGeofenceApp.Data
             ProjectsJson? payload = null;
             try
             {
-                payload = JsonSerializer.Deserialize(templateStream, JsonContext.Default.ProjectsJson);
+                payload = await JsonSerializer.DeserializeAsync<ProjectsJson>(templateStream);
             }
             catch (Exception e)
-            {
+            {   
                 _logger.LogError(e, "Error deserializing seed data");
             }
 
